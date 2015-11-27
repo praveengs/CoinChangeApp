@@ -1,0 +1,46 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/util
+	    http://www.springframework.org/schema/util/spring-util.xsd">
+
+
+    <util:list id="currencyMapperList" value-type="com.home.cc.currency.CurrencyBuilder">
+        <ref bean="matcher1"/>
+        <ref bean="matcher2"/>
+        <ref bean="matcher3"/>
+        <ref bean="matcher4"/>
+    </util:list>
+
+    <bean id="matcher1" class="com.home.cc.currency.CurrencyBuilder">
+        <constructor-arg type="java.lang.String" value="£\d+\.\d+p"/>
+        <constructor-arg type="java.lang.String" value="\d+\.\d{2}"/>
+        <constructor-arg type="java.lang.String" value="\."/>
+    </bean>
+
+    <bean id="matcher2" class="com.home.cc.currency.CurrencyBuilder">
+        <constructor-arg type="java.lang.String" value="^\d+[p]*$"/>
+        <constructor-arg type="java.lang.String" value="(?:^\d+[p]*$)?\d+"/>
+        <constructor-arg type="java.lang.String" value="\."/>
+    </bean>
+
+    <bean id="matcher3" class="com.home.cc.currency.CurrencyBuilder">
+        <constructor-arg type="java.lang.String" value="^[£|\d]\d*\.\d*[\d|p]$"/>
+        <constructor-arg type="java.lang.String" value="(?:^[£|\d]\d*\.\d*[\d|p]$)?\d+\.\d{2}"/>
+        <constructor-arg type="java.lang.String" value="\."/>
+    </bean>
+
+    <bean id="matcher4" class="com.home.cc.currency.CurrencyBuilder">
+        <constructor-arg type="java.lang.String" value="^£\d*$"/>
+        <constructor-arg type="java.lang.String" value="(^£\d*$)?\d+"/>
+        <constructor-arg type="java.lang.String" value="\."/>
+        <constructor-arg type="java.lang.String" value=".00"/>
+    </bean>
+
+</beans>

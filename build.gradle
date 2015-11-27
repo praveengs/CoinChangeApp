@@ -1,0 +1,22 @@
+group 'com.home'
+version '1.0-SNAPSHOT'
+
+def javaProjects() {
+    subprojects.findAll { new File(it.projectDir, 'src').directory }
+}
+
+configure(javaProjects()) {
+    apply plugin: 'java'
+
+    tasks.withType(JavaCompile) {
+        options.encoding = "utf-8" // adapt as necessary
+    }
+    sourceCompatibility = 1.8
+
+}
+
+subprojects {
+    repositories {
+        mavenCentral()
+    }
+}
