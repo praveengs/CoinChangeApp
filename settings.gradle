@@ -2,4 +2,3 @@ rootProject.name = 'CoinChangeApp'
 
 include 'CoinChangeModel'
 include 'CoinChangeRESTfulAPI'
-include 'CoinChangeUI'

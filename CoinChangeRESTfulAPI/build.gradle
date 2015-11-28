@@ -1,7 +1,21 @@
+tasks.withType(JavaCompile) {
+    options.encoding = "utf-8" // adapt as necessary
+}
+
+task runApp(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+
+    main = 'com.home.cc.rest.controller.CoinChangeController'
+
+    // arguments to pass to the application
+    args 'server'
+    args buildDir.absolutePath+'/resources/main/service.yml'
+}
 
 dependencies {
     compile project (':CoinChangeModel')
     compile 'io.dropwizard:dropwizard-core:0.9.1'
+    compile 'io.dropwizard:dropwizard-views-freemarker:0.9.1'
 
     testCompile 'junit:junit:4.11'
     testCompile 'io.dropwizard:dropwizard-testing:0.9.1'

@@ -4,6 +4,7 @@ import com.codahale.metrics.annotation.Timed;
 import com.home.cc.CoinChangeGenerator;
 import com.home.cc.exception.InvalidInputException;
 import com.home.cc.rest.exception.BadRequestException;
+import com.home.cc.rest.resources.views.AmountBreakDownView;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -15,7 +16,7 @@ import javax.ws.rs.core.MediaType;
  * Created by prave_000 on 28/11/2015.
  */
 @Path("/coin-change")
-@Produces(MediaType.APPLICATION_JSON)
+@Produces(MediaType.TEXT_HTML)
 public class CoinChangeResource {
 
     private CoinChangeGenerator coinChangeGenerator;
@@ -33,14 +34,18 @@ public class CoinChangeResource {
      */
     @GET
     @Timed
-    public String getCoinChange(@QueryParam("amount") String amount) {
-        String returnString;
+    public AmountBreakDownView getCoinChange(@QueryParam("amount") String amount) {
+        AmountBreakDownView amountBreakDownView;
+        String returnString = null;
+        String error = null;
         try{
-            returnString = coinChangeGenerator.findMinimumChangeJSON(amount);
+            returnString = coinChangeGenerator.findMinimumChangeString(amount);
         } catch (InvalidInputException e)
         {
-            throw new BadRequestException(e.getMessage());
+            e.printStackTrace();
+            error = e.getMessage();
         }
-        return returnString;
+        amountBreakDownView = new AmountBreakDownView(amount, returnString, error);
+        return amountBreakDownView;
     }
 }
