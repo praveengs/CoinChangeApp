@@ -1,7 +1,7 @@
 package com.home.cc.spring;
 
-import com.home.cc.AmountToCanonicalEqGenerator;
 import com.home.cc.currency.CurrencyBuilder;
+import com.home.cc.currency.model.CurrencyModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,12 +18,12 @@ public class AppConfig {
 
 
     @Autowired
-    Collection<CurrencyBuilder> currencyMapperList;
+    Collection<CurrencyModel> currencyModels;
 
     @Bean
-    public AmountToCanonicalEqGenerator amountToCanonicalEqGenerator() {
-        AmountToCanonicalEqGenerator amountToCanonicalEqGenerator = AmountToCanonicalEqGenerator.getInstance();
-        amountToCanonicalEqGenerator.setCurrencyBuilders(currencyMapperList);
-        return amountToCanonicalEqGenerator;
+    public CurrencyBuilder currencyBuilder() {
+        CurrencyBuilder currencyBuilder = CurrencyBuilder.getInstance();
+        currencyBuilder.setCurrencyModels(currencyModels);
+        return currencyBuilder;
     }
 }

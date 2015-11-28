@@ -10,36 +10,54 @@
         http://www.springframework.org/schema/util
 	    http://www.springframework.org/schema/util/spring-util.xsd">
 
+    <util:list id="currencyModels" value-type="com.home.cc.currency.model.CurrencyModel">
+        <ref bean="poundCurrencyModel"/>
+    </util:list>
 
-    <util:list id="currencyMapperList" value-type="com.home.cc.currency.CurrencyBuilder">
+    <bean id="poundCurrencyModel" class="com.home.cc.currency.model.CurrencyModel">
+        <constructor-arg index="0" type="java.lang.String" value="£"/>
+        <constructor-arg index="1" type="java.lang.String" value="p"/>
+        <constructor-arg index="2" type="java.lang.String" value="\."/>
+        <constructor-arg index="3" ref="poundMapperList"/>
+        <constructor-arg index="4" ref="poundCoins"/>
+    </bean>
+
+    <util:list id="poundCoins" value-type="java.lang.String">
+        <value>£2</value>
+        <value>£1</value>
+        <value>50p</value>
+        <value>20p</value>
+        <value>10p</value>
+        <value>5p</value>
+        <value>2p</value>
+        <value>1p</value>
+    </util:list>
+
+    <util:list id="poundMapperList" value-type="com.home.cc.currency.model.CurrencyPattern">
         <ref bean="matcher1"/>
         <ref bean="matcher2"/>
         <ref bean="matcher3"/>
         <ref bean="matcher4"/>
     </util:list>
 
-    <bean id="matcher1" class="com.home.cc.currency.CurrencyBuilder">
+    <bean id="matcher1" class="com.home.cc.currency.model.CurrencyPattern">
         <constructor-arg type="java.lang.String" value="£\d+\.\d+p"/>
         <constructor-arg type="java.lang.String" value="\d+\.\d{2}"/>
-        <constructor-arg type="java.lang.String" value="\."/>
     </bean>
 
-    <bean id="matcher2" class="com.home.cc.currency.CurrencyBuilder">
+    <bean id="matcher2" class="com.home.cc.currency.model.CurrencyPattern">
         <constructor-arg type="java.lang.String" value="^\d+[p]*$"/>
         <constructor-arg type="java.lang.String" value="(?:^\d+[p]*$)?\d+"/>
-        <constructor-arg type="java.lang.String" value="\."/>
     </bean>
 
-    <bean id="matcher3" class="com.home.cc.currency.CurrencyBuilder">
+    <bean id="matcher3" class="com.home.cc.currency.model.CurrencyPattern">
         <constructor-arg type="java.lang.String" value="^[£|\d]\d*\.\d*[\d|p]$"/>
         <constructor-arg type="java.lang.String" value="(?:^[£|\d]\d*\.\d*[\d|p]$)?\d+\.\d{2}"/>
-        <constructor-arg type="java.lang.String" value="\."/>
     </bean>
 
-    <bean id="matcher4" class="com.home.cc.currency.CurrencyBuilder">
+    <bean id="matcher4" class="com.home.cc.currency.model.CurrencyPattern">
         <constructor-arg type="java.lang.String" value="^£\d*$"/>
         <constructor-arg type="java.lang.String" value="(^£\d*$)?\d+"/>
-        <constructor-arg type="java.lang.String" value="\."/>
         <constructor-arg type="java.lang.String" value=".00"/>
     </bean>
 
