@@ -1,0 +1,8 @@
+
+dependencies {
+    compile project (':CoinChangeModel')
+    compile 'io.dropwizard:dropwizard-core:0.9.1'
+
+    testCompile 'junit:junit:4.11'
+    testCompile 'io.dropwizard:dropwizard-testing:0.9.1'
+}
