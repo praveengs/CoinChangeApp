@@ -144,7 +144,9 @@ public class CurrencyBuilder {
      * @return returns the amount in canonical form
      */
     public int getAmount(String currencyAmount, CurrencyPattern currencyPattern,
-                         String delimiter, int conversionDenomination) {
+                         String delimiter, int conversionDenomination) throws InvalidInputException {
+
+
         Matcher matcher = currencyPattern.getAmountPattern().matcher(currencyAmount);
         int amountToReturn = -1;
         if (matcher.find()) {
@@ -152,6 +154,9 @@ public class CurrencyBuilder {
 
             if (currencyPattern.getPaddingString() != null) {
                 amount += currencyPattern.getPaddingString();
+            }
+            if (amount.length() > 5) {
+                throw new InvalidInputException("Unable to handle the large amount, try a smaller one");
             }
             String[] amountArray = amount.split(delimiter);
             if (amountArray.length == 1) {
