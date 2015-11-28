@@ -16,7 +16,7 @@ import javax.ws.rs.core.MediaType;
  * Created by prave_000 on 28/11/2015.
  */
 @Path("/coin-change")
-@Produces(MediaType.TEXT_HTML)
+@Produces("text/html;charset=UTF-8")
 public class CoinChangeResource {
 
     private CoinChangeGenerator coinChangeGenerator;
