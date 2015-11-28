@@ -32,56 +32,65 @@ public class CurrencyBuilderTest {
     @Test
     public void findValueForValidInput123p() throws InvalidInputException {
         String amount = "123p";
-        assertEquals(123, currencyBuilder.computeCanonicalValue(amount).getAmountInCanonicalForm());
+        String currency = "Pounds";
+        assertEquals(123, currencyBuilder.computeCanonicalValue(currency, amount).getAmountInCanonicalForm());
 
     }
 
     @Test
     public void findValueForValidInputPound12Dot34() throws InvalidInputException {
         String amount = "£12.34";
-        assertEquals(1234, currencyBuilder.computeCanonicalValue(amount).getAmountInCanonicalForm());
+        String currency = "Pounds";
+        assertEquals(1234, currencyBuilder.computeCanonicalValue(currency, amount).getAmountInCanonicalForm());
     }
 
     @Test
     public void findValueForValidInput432() throws InvalidInputException {
         String amount = "432";
-        assertEquals(432, currencyBuilder.computeCanonicalValue(amount).getAmountInCanonicalForm());
+        String currency = "Pounds";
+        assertEquals(432, currencyBuilder.computeCanonicalValue(currency, amount).getAmountInCanonicalForm());
     }
 
     @Test
     public void findValueForValidInputPound16Dot23p() throws InvalidInputException {
         String amount = "£16.23p";
-        assertEquals(1623, currencyBuilder.computeCanonicalValue(amount).getAmountInCanonicalForm());
+        String currency = "Pounds";
+        assertEquals(1623, currencyBuilder.computeCanonicalValue(currency, amount).getAmountInCanonicalForm());
 
     }
 
     @Test
     public void findValueForValidInputPound14() throws InvalidInputException {
         String amount = "£14";
-        assertEquals(1400, currencyBuilder.computeCanonicalValue(amount).getAmountInCanonicalForm());
+        String currency = "Pounds";
+        assertEquals(1400, currencyBuilder.computeCanonicalValue(currency, amount).getAmountInCanonicalForm());
     }
 
     @Test
     public void findValueForValidInputPound23Dot3333() throws InvalidInputException {
         String amount = "£23.333333" ;
-        assertEquals(2333, currencyBuilder.computeCanonicalValue(amount).getAmountInCanonicalForm());
+        String currency = "Pounds";
+        assertEquals(2333, currencyBuilder.computeCanonicalValue(currency, amount).getAmountInCanonicalForm());
     }
 
     @Test
     public void findValueForValidInput001Dot41p() throws InvalidInputException {
         String amount = "001.41p";
-        assertEquals(141, currencyBuilder.computeCanonicalValue(amount).getAmountInCanonicalForm());
+        String currency = "Pounds";
+        assertEquals(141, currencyBuilder.computeCanonicalValue(currency, amount).getAmountInCanonicalForm());
     }
 
     @Test (expected = InvalidInputException.class)
     public void findValueForInValidInput13x() throws InvalidInputException {
         String amount = "13x";
-        currencyBuilder.computeCanonicalValue(amount).getAmountInCanonicalForm();
+        String currency = "Pounds";
+        currencyBuilder.computeCanonicalValue(currency, amount).getAmountInCanonicalForm();
     }
 
     @Test (expected = InvalidInputException.class)
     public void findValueForInValidInput13pdot02() throws InvalidInputException {
         String amount = "13p.02";
-        currencyBuilder.computeCanonicalValue(amount).getAmountInCanonicalForm();
+        String currency = "Pounds";
+        currencyBuilder.computeCanonicalValue(currency, amount).getAmountInCanonicalForm();
     }
 }

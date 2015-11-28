@@ -15,11 +15,23 @@
     </util:list>
 
     <bean id="poundCurrencyModel" class="com.home.cc.currency.model.CurrencyModel">
-        <constructor-arg index="0" type="java.lang.String" value="£"/>
-        <constructor-arg index="1" type="java.lang.String" value="p"/>
-        <constructor-arg index="2" type="java.lang.String" value="\."/>
-        <constructor-arg index="3" ref="poundMapperList"/>
-        <constructor-arg index="4" ref="poundCoins"/>
+        <constructor-arg index="0" type="java.lang.String" value="Pounds"/>
+        <constructor-arg index="1" type="java.lang.String" value="£"/>
+        <constructor-arg index="2" type="java.lang.String" value="p"/>
+        <constructor-arg index="3" type="java.lang.String" value="\."/>
+        <constructor-arg index="4" ref="poundMapperList"/>
+        <constructor-arg index="5" ref="poundCoins"/>
+        <constructor-arg index="6" type="java.lang.Integer" value="100"/>
+    </bean>
+
+    <bean id="qQCurrencyModel" class="com.home.cc.currency.model.CurrencyModel">
+        <constructor-arg index="0" type="java.lang.String" value="QCurrency"/>
+        <constructor-arg index="1" type="java.lang.String" value="Q"/>
+        <constructor-arg index="2" type="java.lang.String" value="q"/>
+        <constructor-arg index="3" type="java.lang.String" value="\-"/>
+        <constructor-arg index="4" ref="qCurrencyMapperList"/>
+        <constructor-arg index="5" ref="qCoins"/>
+        <constructor-arg index="6" type="java.lang.Integer" value="64"/>
     </bean>
 
     <util:list id="poundCoins" value-type="java.lang.String">
@@ -31,6 +43,17 @@
         <value>5p</value>
         <value>2p</value>
         <value>1p</value>
+    </util:list>
+
+    <util:list id="qCoins" value-type="java.lang.String">
+        <value>Q2</value>
+        <value>Q1</value>
+        <value>32q</value>
+        <value>16q</value>
+        <value>8q</value>
+        <value>4q</value>
+        <value>2q</value>
+        <value>1q</value>
     </util:list>
 
     <util:list id="poundMapperList" value-type="com.home.cc.currency.model.CurrencyPattern">
@@ -59,6 +82,34 @@
         <constructor-arg type="java.lang.String" value="^£\d*$"/>
         <constructor-arg type="java.lang.String" value="(^£\d*$)?\d+"/>
         <constructor-arg type="java.lang.String" value=".00"/>
+    </bean>
+
+    <util:list id="qCurrencyMapperList" value-type="com.home.cc.currency.model.CurrencyPattern">
+        <ref bean="qmatcher1"/>
+        <ref bean="qmatcher2"/>
+        <ref bean="qmatcher3"/>
+        <ref bean="qmatcher4"/>
+    </util:list>
+
+    <bean id="qmatcher1" class="com.home.cc.currency.model.CurrencyPattern">
+        <constructor-arg type="java.lang.String" value="Q\d+\-\d+q$"/>
+        <constructor-arg type="java.lang.String" value="\d+\-\d{2}"/>
+    </bean>
+
+    <bean id="qmatcher2" class="com.home.cc.currency.model.CurrencyPattern">
+        <constructor-arg type="java.lang.String" value="^\d+[q]*$"/>
+        <constructor-arg type="java.lang.String" value="(?:^\d+[q]*$)?\d+"/>
+    </bean>
+
+    <bean id="qmatcher3" class="com.home.cc.currency.model.CurrencyPattern">
+        <constructor-arg type="java.lang.String" value="^[Q|\d]\d*\-\d*[\d|q]$"/>
+        <constructor-arg type="java.lang.String" value="(?:^[Q|\d]\d*\-\d*[\d|q]$)?\d+\-\d{2}"/>
+    </bean>
+
+    <bean id="qmatcher4" class="com.home.cc.currency.model.CurrencyPattern">
+        <constructor-arg type="java.lang.String" value="^Q\d*$"/>
+        <constructor-arg type="java.lang.String" value="(^Q\d*$)?\d+"/>
+        <constructor-arg type="java.lang.String" value="-00"/>
     </bean>
 
 </beans>

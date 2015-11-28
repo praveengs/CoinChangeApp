@@ -14,6 +14,11 @@ import java.util.List;
 public class CurrencyModel {
 
     /**
+     * A name to identify this currency
+     */
+    private String currencyName;
+
+    /**
      * This denotes the sign used for
      * the major denomination
      * e.g. £
@@ -44,6 +49,11 @@ public class CurrencyModel {
     private Collection<String> coinsAvailable;
 
     /**
+     * This is the equivalent of 1 major currency
+     */
+    private int conversionDenomination;
+
+    /**
      * This will hold the coinsAvailable converted to
      * pence and stored in sorted order for faster
      * processing
@@ -54,17 +64,23 @@ public class CurrencyModel {
      * Constructor the the class.
      * Set through spring
      *
+     * @param currencyName name of the currency, e.g. Pound
      * @param majorPartSymbol e.g £, Q etc
      * @param minorPartSymbol e.g. p
      * @param delimiter e.g .,- etc
      * @param currencyPatterns the currency matching patterns
      * @param coinsAvailable the available coins
+     * @param conversionDenomination the equivalant of 1 major currency
      */
-    public CurrencyModel(String majorPartSymbol, String minorPartSymbol, String delimiter, Collection<CurrencyPattern> currencyPatterns, Collection<String> coinsAvailable) {
+    public CurrencyModel(String currencyName, String majorPartSymbol, String minorPartSymbol, String delimiter,
+                         Collection<CurrencyPattern> currencyPatterns,
+                         Collection<String> coinsAvailable, Integer conversionDenomination) {
+        this.currencyName = currencyName;
         this.majorPartSymbol = majorPartSymbol;
         this.minorPartSymbol = minorPartSymbol;
         this.delimiter = delimiter;
         this.currencyPatterns = currencyPatterns;
+        this.conversionDenomination = conversionDenomination;
         setCoinsAvailable(coinsAvailable);
     }
 
@@ -143,7 +159,7 @@ public class CurrencyModel {
     private Integer convertToPence(String coin) {
         int retValue = 0;
         if (coin.startsWith(getMajorPartSymbol())) {
-            retValue = Integer.parseInt(coin.substring(1)) * 100;
+            retValue = Integer.parseInt(coin.substring(1)) * getConversionDenomination();
         } else if (coin.endsWith(getMinorPartSymbol())) {
             retValue = Integer.parseInt(coin.substring(0, coin.length() - 1));
         }
@@ -156,5 +172,21 @@ public class CurrencyModel {
 
     public void setCoinsInPenceSorted(List<Integer> coinsInPenceSorted) {
         this.coinsInPenceSorted = coinsInPenceSorted;
+    }
+
+    public int getConversionDenomination() {
+        return conversionDenomination;
+    }
+
+    public void setConversionDenomination(int conversionDenomination) {
+        this.conversionDenomination = conversionDenomination;
+    }
+
+    public String getCurrencyName() {
+        return currencyName;
+    }
+
+    public void setCurrencyName(String currencyName) {
+        this.currencyName = currencyName;
     }
 }

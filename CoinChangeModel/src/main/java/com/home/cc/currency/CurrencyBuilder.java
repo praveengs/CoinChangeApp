@@ -14,6 +14,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * This is the class that helps
+ * in building currency amounts
+ * <p>
  * Created by prave_000 on 26/11/2015.
  */
 public class CurrencyBuilder {
@@ -34,8 +37,8 @@ public class CurrencyBuilder {
         /**
          * constructor
          *
-         * @param amountInCanonicalForm
-         * @param currencyModel
+         * @param amountInCanonicalForm the value in canonical form
+         * @param currencyModel         the currency model
          */
         public ValueExchangeModel(int amountInCanonicalForm, CurrencyModel currencyModel) {
             this.amountInCanonicalForm = amountInCanonicalForm;
@@ -72,7 +75,7 @@ public class CurrencyBuilder {
     /**
      * method to return the instance of this singleton
      *
-     * @return
+     * @return the instance
      */
     public static CurrencyBuilder getInstance() {
         return instance;
@@ -83,26 +86,29 @@ public class CurrencyBuilder {
      * amount and returns it along with the currency model to
      * which it belongs to, for further computations
      *
-     * @param amount
-     * @return
+     * @param currency the currency to match
+     * @param amount   the amount to convert
+     * @return an internal class to pass around the value and the currency model
      * @throws InvalidInputException
      */
-    public ValueExchangeModel computeCanonicalValue(String amount) throws InvalidInputException {
+    public ValueExchangeModel computeCanonicalValue(String currency, String amount) throws InvalidInputException {
         ValueExchangeModel valueExchangeModel = null;
         int amountToReturn = -1;
 
         for (CurrencyModel currencyModel : getCurrencyModels()) {
-            try {
-                amountToReturn = getAmount(amount, currencyModel.getCurrencyPatterns().parallelStream()
-                        .filter(currencyPattern -> isAMatch(amount, currencyPattern.getCurrencyPattern()))
-                        .findFirst().get(), currencyModel.getDelimiter());
-                valueExchangeModel = new ValueExchangeModel(amountToReturn, currencyModel);
-            } catch (NoSuchElementException e) {
-                //Catching to handle separately
+            if (currencyModel.getCurrencyName().equalsIgnoreCase(currency)) {
+                try {
+                    amountToReturn = getAmount(amount, currencyModel.getCurrencyPatterns().parallelStream()
+                            .filter(currencyPattern -> isAMatch(amount, currencyPattern.getCurrencyPattern()))
+                            .findFirst().get(), currencyModel.getDelimiter(), currencyModel.getConversionDenomination());
+                    valueExchangeModel = new ValueExchangeModel(amountToReturn, currencyModel);
+                } catch (NoSuchElementException e) {
+                    //Catching to handle separately
+                }
             }
         }
         if (amountToReturn == -1) {
-            throw new InvalidInputException("The amount " + amount + " is invalid");
+            throw new InvalidInputException("The amount " + amount + " is invalid for the currency " + currency);
         }
 
         return valueExchangeModel;
@@ -112,9 +118,9 @@ public class CurrencyBuilder {
      * This method checks if the incoming currency in string format
      * matches the pattern.
      *
-     * @param currencyAmount
-     * @param currencyPattern
-     * @return
+     * @param currencyAmount  the currency amount to match
+     * @param currencyPattern the currency pattern to do the matching
+     * @return true if matches
      */
     public boolean isAMatch(String currencyAmount, Pattern currencyPattern) {
         boolean isAMatch = false;
@@ -131,12 +137,14 @@ public class CurrencyBuilder {
      * to parse the amount out of the incoming string, and then convert
      * the amount into smaller denomination for easier computation
      *
-     * @param currencyAmount
-     * @param currencyPattern
-     * @param delimiter
-     * @return
+     * @param currencyAmount         the currency amount to convert
+     * @param currencyPattern        the amount pattern to extract the amount
+     * @param delimiter              the delimiter to separate the amounts
+     * @param conversionDenomination the conversion denomination
+     * @return returns the amount in canonical form
      */
-    public int getAmount(String currencyAmount, CurrencyPattern currencyPattern, String delimiter) {
+    public int getAmount(String currencyAmount, CurrencyPattern currencyPattern,
+                         String delimiter, int conversionDenomination) {
         Matcher matcher = currencyPattern.getAmountPattern().matcher(currencyAmount);
         int amountToReturn = -1;
         if (matcher.find()) {
@@ -150,7 +158,7 @@ public class CurrencyBuilder {
                 //only lhs present
                 amountToReturn = Integer.parseInt(amount);
             } else if (amountArray.length > 1) {
-                amountToReturn = Integer.parseInt(amountArray[0]) * 100 +
+                amountToReturn = Integer.parseInt(amountArray[0]) * conversionDenomination +
                         Integer.parseInt(amountArray[1]);
             }
         }
@@ -165,14 +173,15 @@ public class CurrencyBuilder {
      * It then uses those denominations to convert them into actual
      * currency model and get the count of each with the currency symbols
      *
-     * @param amount
+     * @param currency the currency to match
+     * @param amount   the incoming amount
      * @return a hashmap with key as the denomination and value as count
      * @throws InvalidInputException
      */
-    public HashMap<String, String> computeAmountDenoms(String amount) throws InvalidInputException {
+    public HashMap<String, String> computeAmountDenoms(String currency, String amount) throws InvalidInputException {
         //Compute the canonical form of the incoming amount
         //and also get the currency model for the amount
-        ValueExchangeModel valueExchangeModel = computeCanonicalValue(amount);
+        ValueExchangeModel valueExchangeModel = computeCanonicalValue(currency, amount);
 
         CurrencyModel currencyModel = valueExchangeModel.getCurrencyModel();
 
@@ -181,11 +190,10 @@ public class CurrencyBuilder {
                 computeAmountDenoms(valueExchangeModel.getAmountInCanonicalForm(),
                         currencyModel.getCoinsInPenceSorted());
 
-        //Convert the denominations and counts to currency symbol format
-        HashMap<String, String> retMap =
-                convertDenomCountMapToStringMap(countMap, currencyModel.getMajorPartSymbol(),
-                        currencyModel.getMinorPartSymbol());
-        return retMap;
+        //Convert the denominations and counts to currency symbol format and
+        //return the map
+        return convertDenomCountMapToStringMap(countMap, currencyModel.getMajorPartSymbol(),
+                currencyModel.getMinorPartSymbol(), currencyModel.getConversionDenomination());
     }
 
     /**
@@ -195,8 +203,8 @@ public class CurrencyBuilder {
      * The collection of coins is assumed to be sorted in the reverse
      * order of denomination
      *
-     * @param amountInPence
-     * @param coinsInPenceSorted
+     * @param amountInPence      amount in pence
+     * @param coinsInPenceSorted coins sorted in reverse order
      * @return a hashmap with denomination as key and count as value
      */
     private HashMap<Integer, Integer> computeAmountDenoms(int amountInPence, List<Integer> coinsInPenceSorted) {
@@ -212,38 +220,43 @@ public class CurrencyBuilder {
      * This method uses the integer entries in one hashmap to currency symbol equivalant
      * entries in the other
      *
-     * @param denomCountMap
-     * @param majorPartSymbol
-     * @param minorPartSymbol
-     * @return
+     * @param denomCountMap          the incoming map
+     * @param majorPartSymbol        the major part symbol
+     * @param minorPartSymbol        the minor part symbol
+     * @param conversionDenomination the conversion denomination
+     * @return converting the incoming integer map to string map
      */
     private HashMap<String, String> convertDenomCountMapToStringMap(HashMap<Integer, Integer> denomCountMap,
-                                                                    String majorPartSymbol, String minorPartSymbol) {
+                                                                    String majorPartSymbol, String minorPartSymbol,
+                                                                    int conversionDenomination) {
         HashMap<String, String> convertedMap = new LinkedHashMap<>(denomCountMap.size());
         //Iterate through each entry and convert them and store them into the new hash map
         denomCountMap.forEach(
                 (denom, count) -> convertedMap.put(
-                        convertPenceToCurr(denom, majorPartSymbol, minorPartSymbol), String.valueOf(count)));
+                        convertPenceToCurr(denom, majorPartSymbol, minorPartSymbol, conversionDenomination),
+                        String.valueOf(count)));
         return convertedMap;
     }
 
     /**
      * This method checks if its a major currency equivalant
      * or a minor currency equivalant.
-     *
+     * <p>
      * The logic is to divide the denomination by 100, and if the quotient is greater
      * than 0 then its a major currency and attach the major symbol to the beginning.
-     *
+     * <p>
      * Else attach the minor symbol to the end
      *
-     * @param denom
-     * @param majorPartSymbol
-     * @param minorPartSymbol
-     * @return
+     * @param denom                  the denomination to convert
+     * @param majorPartSymbol        the major part symbol
+     * @param minorPartSymbol        the minor part symbol
+     * @param conversionDenomination the conversion denomination
+     * @return a string representation of the currency format
      */
-    private String convertPenceToCurr(Integer denom, String majorPartSymbol, String minorPartSymbol) {
-        if (denom / 100 > 0) {
-            return majorPartSymbol + (denom / 100);
+    private String convertPenceToCurr(Integer denom, String majorPartSymbol,
+                                      String minorPartSymbol, int conversionDenomination) {
+        if (denom / conversionDenomination > 0) {
+            return majorPartSymbol + (denom / conversionDenomination);
         } else {
             return denom + minorPartSymbol;
         }
@@ -255,10 +268,10 @@ public class CurrencyBuilder {
      * until the amount becomes zero. A hashmap is used to store the data of he denominations used
      * so far and the count of times it has been used.
      *
-     * @param amountInPence
-     * @param denomCountMap
-     * @param coinsInPenceSorted
-     * @param index
+     * @param amountInPence      the amount in lowest denomination
+     * @param denomCountMap      the map to pass around the denomination and the counts
+     * @param coinsInPenceSorted the collection of reverse sorted coins
+     * @param index              the current index of coinsInPenceSorted
      */
     private void countForAmount(int amountInPence, HashMap<Integer, Integer> denomCountMap,
                                 List<Integer> coinsInPenceSorted, int index) {
@@ -280,7 +293,7 @@ public class CurrencyBuilder {
     /**
      * Gettter for the currency models
      *
-     * @return
+     * @return the currency currency models set through spring
      */
     public Collection<CurrencyModel> getCurrencyModels() {
         return currencyModels;
@@ -288,7 +301,8 @@ public class CurrencyBuilder {
 
     /**
      * Setter for the currency models
-     * @param currencyModels
+     *
+     * @param currencyModels the currency models
      */
     public void setCurrencyModels(Collection<CurrencyModel> currencyModels) {
         this.currencyModels = currencyModels;

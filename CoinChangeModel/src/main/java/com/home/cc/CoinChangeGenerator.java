@@ -7,7 +7,9 @@ import com.home.cc.spring.AppConfig;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * The entry end point class for finding change for the amount
@@ -36,12 +38,14 @@ public class CoinChangeGenerator {
     /**
      * This method returns the change in a human friendly string format
      *
-     * @param amount
-     * @return
+     *
+     * @param currency the currency name
+     * @param amount the amount
+     * @return the minimum change in a string
      * @throws InvalidInputException
      */
-    public String findMinimumChangeString(String amount) throws InvalidInputException {
-        HashMap<String, String> coinChangeMap = getCurrencyBuilder().computeAmountDenoms(amount);
+    public String findMinimumChangeString(String currency, String amount) throws InvalidInputException {
+        HashMap<String, String> coinChangeMap = getCurrencyBuilder().computeAmountDenoms(currency, amount);
         StringBuffer returnBuffer = new StringBuffer("");
         coinChangeMap.forEach((denomination, count) ->
                 returnBuffer.append(count).append(" x ").append(denomination).append(", "));
@@ -50,13 +54,14 @@ public class CoinChangeGenerator {
 
     /**
      * This method returns the change in a machine and human friendly json format
-     * @param amount
-     * @return
+     * @param currency the currency
+     * @param amount the amount
+     * @return the minimum change as a json
      * @throws InvalidInputException
      */
-    public String findMinimumChangeJSON(String amount) throws InvalidInputException {
+    public String findMinimumChangeJSON(String currency, String amount) throws InvalidInputException {
 
-        HashMap<String, String> coinChangeMap = getCurrencyBuilder().computeAmountDenoms(amount);
+        HashMap<String, String> coinChangeMap = getCurrencyBuilder().computeAmountDenoms(currency, amount);
 
         Gson gson = new Gson();
         String coinChangeInJSON = gson.toJson(coinChangeMap);
@@ -78,5 +83,19 @@ public class CoinChangeGenerator {
 
     public void setCurrencyBuilder(CurrencyBuilder currencyBuilder) {
         this.currencyBuilder = currencyBuilder;
+    }
+
+    /**
+     * This method is used to return all the available currencies
+     * @return list of currency names available
+     *
+     */
+    public List<String> retrieveAllCurrencieNames() {
+        List<String> currenciesAvailable = new ArrayList<>(2);
+        getCurrencyBuilder()
+                .getCurrencyModels()
+                .forEach(currencyModel ->
+                        currenciesAvailable.add(currencyModel.getCurrencyName()));
+        return currenciesAvailable;
     }
 }

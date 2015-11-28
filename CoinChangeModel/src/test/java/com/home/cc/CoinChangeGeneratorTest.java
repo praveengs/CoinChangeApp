@@ -38,29 +38,34 @@ public class CoinChangeGeneratorTest {
     @Test
     public void countChangeForValidInput123p() throws InvalidInputException {
         String amount = "123p";
-        assertEquals("1 x £1, 1 x 20p, 1 x 2p, 1 x 1p", coinChangeGenerator.findMinimumChangeString(amount));
+        String currency = "Pounds";
+        assertEquals("1 x £1, 1 x 20p, 1 x 2p, 1 x 1p", coinChangeGenerator.findMinimumChangeString(currency, amount));
     }
 
     @Test
     public void countChangeForValidInputPound12Dot34() throws InvalidInputException {
         String amount = "£12.34";
-        assertEquals("6 x £2, 1 x 20p, 1 x 10p, 2 x 2p", coinChangeGenerator.findMinimumChangeString(amount));
+        String currency = "Pounds";
+        assertEquals("6 x £2, 1 x 20p, 1 x 10p, 2 x 2p", coinChangeGenerator.findMinimumChangeString(currency, amount));
     }
 
     @Test
     public void countChangeForValidInput432() throws InvalidInputException {
         String amount = "432";
-        assertEquals("2 x £2, 1 x 20p, 1 x 10p, 1 x 2p", coinChangeGenerator.findMinimumChangeString(amount));
+        String currency = "Pounds";
+        assertEquals("2 x £2, 1 x 20p, 1 x 10p, 1 x 2p", coinChangeGenerator.findMinimumChangeString(currency, amount));
     }
 
     @Test
     public void countChangeForValidInputPound16Dot23p() throws InvalidInputException {
         String amount = "£16.23p";
-        assertEquals("8 x £2, 1 x 20p, 1 x 2p, 1 x 1p", coinChangeGenerator.findMinimumChangeString(amount));
+        String currency = "Pounds";
+        assertEquals("8 x £2, 1 x 20p, 1 x 2p, 1 x 1p", coinChangeGenerator.findMinimumChangeString(currency, amount));
     }
 
     @Test
     public void countChangeForValidInput123pJSON() throws InvalidInputException {
+        String currency = "Pounds";
         Gson gson = new Gson();
         String amount = "123p";
         HashMap<String, String> expectedOutput = new LinkedHashMap<>(4);
@@ -70,18 +75,20 @@ public class CoinChangeGeneratorTest {
         expectedOutput.put("1p","1");
         assertEquals(
                 gson.toJson(expectedOutput),
-                coinChangeGenerator.findMinimumChangeJSON(amount));
+                coinChangeGenerator.findMinimumChangeJSON(currency, amount));
     }
 
     @Test (expected = InvalidInputException.class)
     public void findValueForInValidInput13pdot02() throws InvalidInputException {
         String amount = "13p.02";
-        coinChangeGenerator.findMinimumChangeString(amount);
+        String currency = "Pounds";
+        coinChangeGenerator.findMinimumChangeString(currency, amount);
     }
 
     @Test (expected = InvalidInputException.class)
     public void findValueForInValidInput£p() throws InvalidInputException {
         String amount = "£p";
-        coinChangeGenerator.findMinimumChangeString(amount);
+        String currency = "Pounds";
+        coinChangeGenerator.findMinimumChangeString(currency, amount);
     }
 }
