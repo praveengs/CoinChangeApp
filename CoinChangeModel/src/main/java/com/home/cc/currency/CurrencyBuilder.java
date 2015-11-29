@@ -160,14 +160,21 @@ public class CurrencyBuilder {
             if (currencyPattern.getPaddingString() != null) {
                 amount += currencyPattern.getPaddingString();
             }
+
+            //Stripping off all leading zeros
+            amount = amount.replaceFirst("^0+(?!$)", "");
+
             if (amount.length() > 5) {
                 throw new InvalidInputException("Unable to handle the large amount, try a smaller one");
             }
+
+            //Splitting them on delimiter
             String[] amountArray = amount.split(delimiter);
             if (amountArray.length == 1) {
                 //only lhs present
                 amountToReturn = Integer.parseInt(amount);
             } else if (amountArray.length > 1) {
+
                 amountToReturn = Integer.parseInt(amountArray[0]) * conversionDenomination +
                         Integer.parseInt(amountArray[1]);
             }
