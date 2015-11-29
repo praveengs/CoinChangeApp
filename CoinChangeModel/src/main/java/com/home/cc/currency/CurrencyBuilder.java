@@ -93,22 +93,27 @@ public class CurrencyBuilder {
      */
     public ValueExchangeModel computeCanonicalValue(String currency, String amount) throws InvalidInputException {
         ValueExchangeModel valueExchangeModel = null;
-        int amountToReturn = -1;
+        int amountToReturn;
 
         for (CurrencyModel currencyModel : getCurrencyModels()) {
             if (currencyModel.getCurrencyName().equalsIgnoreCase(currency)) {
                 try {
-                    amountToReturn = getAmount(amount, currencyModel.getCurrencyPatterns().parallelStream()
-                            .filter(currencyPattern -> isAMatch(amount, currencyPattern.getCurrencyPattern()))
-                            .findFirst().get(), currencyModel.getDelimiter(), currencyModel.getConversionDenomination());
+                    //Loop through the patterns in currency model and find the first matching one
+                    //Using the amount pattern within the currency pattern from the model
+                    //find the amount. Set the amount and the currency details in the
+                    //valueExchange model for further computations
+                    amountToReturn = getAmount(amount
+                            , currencyModel.getCurrencyPatterns()
+                                    .parallelStream()
+                                    .filter(currencyPattern -> isAMatch(amount, currencyPattern.getCurrencyPattern()))
+                                    .findFirst().get()
+                            , currencyModel.getDelimiter()
+                            , currencyModel.getConversionDenomination());
                     valueExchangeModel = new ValueExchangeModel(amountToReturn, currencyModel);
                 } catch (NoSuchElementException e) {
-                    //Catching to handle separately
+                    throw new InvalidInputException("The amount " + amount + " is invalid for the currency " + currency);
                 }
             }
-        }
-        if (amountToReturn == -1) {
-            throw new InvalidInputException("The amount " + amount + " is invalid for the currency " + currency);
         }
 
         return valueExchangeModel;
