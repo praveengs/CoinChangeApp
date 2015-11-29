@@ -12,6 +12,7 @@
 
     <util:list id="currencyModels" value-type="com.home.cc.currency.model.CurrencyModel">
         <ref bean="poundCurrencyModel"/>
+        <ref bean="qQCurrencyModel"/>
     </util:list>
 
     <bean id="poundCurrencyModel" class="com.home.cc.currency.model.CurrencyModel">
@@ -93,7 +94,7 @@
 
     <bean id="qmatcher1" class="com.home.cc.currency.model.CurrencyPattern">
         <constructor-arg type="java.lang.String" value="Q\d+\-\d+q$"/>
-        <constructor-arg type="java.lang.String" value="\d+\-\d{2}"/>
+        <constructor-arg type="java.lang.String" value="\d+\-\d+"/>
     </bean>
 
     <bean id="qmatcher2" class="com.home.cc.currency.model.CurrencyPattern">
@@ -103,7 +104,7 @@
 
     <bean id="qmatcher3" class="com.home.cc.currency.model.CurrencyPattern">
         <constructor-arg type="java.lang.String" value="^[Q|\d]\d*\-\d*[\d|q]$"/>
-        <constructor-arg type="java.lang.String" value="(?:^[Q|\d]\d*\-\d*[\d|q]$)?\d+\-\d{2}"/>
+        <constructor-arg type="java.lang.String" value="(?:^[Q|\d]\d*\-\d*[\d|q]$)?\d+\-\d+"/>
     </bean>
 
     <bean id="qmatcher4" class="com.home.cc.currency.model.CurrencyPattern">

@@ -93,7 +93,7 @@ public class CurrencyBuilder {
      */
     public ValueExchangeModel computeCanonicalValue(String currency, String amount) throws InvalidInputException {
         ValueExchangeModel valueExchangeModel = null;
-        int amountToReturn;
+        int amountToReturn = -1;
 
         for (CurrencyModel currencyModel : getCurrencyModels()) {
             if (currencyModel.getCurrencyName().equalsIgnoreCase(currency)) {
@@ -116,6 +116,10 @@ public class CurrencyBuilder {
             }
         }
 
+        if (amountToReturn == -1) {
+            throw new InvalidInputException("Either the amount " + amount + " or the currency "
+                    + currency +" is invalid");
+        }
         return valueExchangeModel;
     }
 
@@ -164,19 +168,26 @@ public class CurrencyBuilder {
             //Stripping off all leading zeros
             amount = amount.replaceFirst("^0+(?!$)", "");
 
-            if (amount.length() > 5) {
-                throw new InvalidInputException("Unable to handle the large amount, try a smaller one");
-            }
-
             //Splitting them on delimiter
             String[] amountArray = amount.split(delimiter);
             if (amountArray.length == 1) {
+                if (amount.length() > 5) {
+                    throw new InvalidInputException("Unable to handle the large amount, try a smaller one");
+                }
                 //only lhs present
                 amountToReturn = Integer.parseInt(amount);
             } else if (amountArray.length > 1) {
+                if (amountArray[0].length() + amountArray[1].length() > 5) {
+                    throw new InvalidInputException("Unable to handle the large amount, try a smaller one");
+                }
+                int lhs = Integer.parseInt(amountArray[0]);
+                int rhs = Integer.parseInt(amountArray[1]);
 
-                amountToReturn = Integer.parseInt(amountArray[0]) * conversionDenomination +
-                        Integer.parseInt(amountArray[1]);
+                if ((rhs / conversionDenomination) > 0)
+                {
+                    throw new InvalidInputException("Invalid denomination "+ rhs +" for the currency");
+                }
+                amountToReturn = (lhs * conversionDenomination) + rhs;
             }
         }
         return amountToReturn;

@@ -18,7 +18,7 @@ public class AppConfig {
 
 
     @Autowired
-    Collection<CurrencyModel> currencyModels;
+    private Collection<CurrencyModel> currencyModels;
 
     @Bean
     public CurrencyBuilder currencyBuilder() {
